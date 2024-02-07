@@ -10,6 +10,7 @@ It outputs bbcode table into your clipboard for use on various forums.
 - [x] upload spectrograph 
 - [x] output bbCode
 - [ ] add support for Markdown
+- [ ] add support for multi dis albums/collections
 - [ ] Basic console UI
 - [ ] (advanced) generate .torrent 
 - [ ] (advanced) upload using UNIT3D api
