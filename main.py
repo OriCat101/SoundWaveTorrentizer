@@ -1,3 +1,4 @@
+import pyperclip
 import analyzer
 def main():
     album_path=input("Album folder: ")
@@ -8,8 +9,8 @@ def main():
         upload_spectrogram = False
 
     album_meta=analyzer.analyze_album(album_path, upload_spectrogram)
-    print(analyzer.generate_bbcode_table(album_meta))
-    # print(album_meta)
+    pyperclip.copy(analyzer.generate_bbcode_table(album_meta))
+    print("BBCode table copied to clipboard.")
 
 if __name__ == "__main__":
     main()
