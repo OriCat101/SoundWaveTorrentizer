@@ -12,6 +12,7 @@ It outputs bbcode table into your clipboard for use on various forums.
 - [ ] add support for Markdown
 - [ ] add support for multi dis albums/collections
 - [ ] Basic console UI
+- [ ] Write usage guide
 - [ ] (advanced) generate .torrent 
 - [ ] (advanced) upload using UNIT3D api
 
