@@ -25,7 +25,7 @@ def save_spectrogram_plot(audio, output_folder, file_path):
     Fs=mixed_channel.frame_rate,
     cmap='viridis',
     NFFT=2000,  # Increase the number of FFT points for higher frequency resolution
-    noverlap=1000,  # Increase the overlap for smoother spectrogram
+    noverlap=100,  # Increase the overlap for smoother spectrogram
   )
   plt.title(f'Mixed Channel Spectrogram: {os.path.basename(file_path)}')
   plt.xlabel('Time (s)')
@@ -146,7 +146,7 @@ def upload_image(file_path):
 
 if __name__ == "__main__":
   # Example usage:
-  album_folder = r"C:\Users\ork\Downloads\spam\Petar Dundov - At The Turn Of Equilibrium (2016)(FLAC)(CD)"
+  album_folder = r"%userprofile%\Downloads\spam\Petar Dundov - At The Turn Of Equilibrium (2016)(FLAC)(CD)"
   output_folder = "output/folder1"
   album_data = analyze_album(album_folder, output_folder)
   print(generate_bbcode_table(album_data))
