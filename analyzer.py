@@ -1,4 +1,6 @@
 import os
+import tempfile
+
 from pydub import AudioSegment
 import matplotlib.pyplot as plt
 from mutagen.flac import FLAC
@@ -25,14 +27,17 @@ def save_spectrogram_plot(audio, output_folder, file_path):
   plt.xlabel('Time (s)')
   plt.ylabel('Frequency (Hz)')
 
-  # Create the output folder if it doesn't exist
-  os.makedirs(output_folder, exist_ok=True)
+  # Create a temporary directory if it doesn't exist
+  tmp_folder = tempfile.mkdtemp()
 
-  # Save the spectrogram plot to a file
-  output_file = os.path.join(output_folder,
+  # Save the spectrogram plot to a file in the temporary directory
+  output_file = os.path.join(tmp_folder,
                              f"{os.path.splitext(os.path.basename(file_path))[0]}_mixed_channel_spectrogram.png")
   plt.savefig(output_file)
   plt.close()
+
+  # Return the path to the saved spectrogram plot
+  return output_file
 
 
 def analyze_album(album_folder, output_folder="output/spectrogram"):
@@ -50,7 +55,8 @@ def analyze_album(album_folder, output_folder="output/spectrogram"):
     if track_num == 1:
       # Save spectrogram
       audioSegment = AudioSegment.from_file(file_path, format="flac")
-      save_spectrogram_plot(audioSegment, output_folder, file_path)
+      print()
+      print(save_spectrogram_plot(audioSegment, output_folder, file_path))
 
   return album
 
@@ -108,6 +114,8 @@ def generate_bbcode_table(metadata):
 
   bbcode += "[/table]"
   return bbcode
+
+
 
 
 if __name__ == "__main__":
