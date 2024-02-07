@@ -80,6 +80,7 @@ def get_flac_info(file_path, upload_spectrogram=False):
     result['duration'] = convert_seconds_to_hms(audio.info.length)
     result['channels'] = audio.info.channels
     result['bits_per_sample'] = audio.info.bits_per_sample
+    result['sample_rate'] = f"{audio.info.sample_rate/1000} kHz"
     result['bitrate'] = f"{int(audio.info.bitrate / 1000)} kbps"
     result['codec'] = "FLAC"
     result['embedded_cuesheet'] = audio.cuesheet
