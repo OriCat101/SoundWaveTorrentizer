@@ -4,25 +4,35 @@ import matplotlib.pyplot as plt
 from mutagen.flac import FLAC
 import hashlib
 
+
 def get_audio_codec(file_path):
     _, extension = os.path.splitext(file_path)
     return extension.lower()[1:]  # Removing the dot at the beginning
 
-def get_flac_info(file_path):
-    def plot_spectrogram(audio):
-        plt.specgram(audio.get_array_of_samples(), Fs=audio.frame_rate, cmap='viridis')
-        plt.title('Spectrogram')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Frequency (Hz)')
-        plt.show()
 
+def save_spectrogram_plot(audio, output_folder, file_path):
+    plt.specgram(audio.get_array_of_samples(), Fs=audio.frame_rate, cmap='viridis')
+    plt.title('Spectrogram')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Frequency (Hz)')
+
+    # Create the output folder if it doesn't exist
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Save the spectrogram plot to a file
+    output_file = os.path.join(output_folder, f"{os.path.splitext(os.path.basename(file_path))[0]}_spectrogram.png")
+    plt.savefig(output_file)
+    plt.close()
+
+
+def get_flac_info(file_path, output_folder="output/spectrogram"):
     result = {}
 
     if os.path.isfile(file_path) and file_path.lower().endswith('.flac'):
         audio = AudioSegment.from_file(file_path, format="flac")
 
-        # Plot spectrogram
-        plot_spectrogram(audio)
+        # Save spectrogram
+        save_spectrogram_plot(audio, output_folder, file_path)
 
         # Extract other parameters
         result['duration'] = audio.duration_seconds
@@ -48,5 +58,6 @@ def get_flac_info(file_path):
 
 # Example usage:
 flac_file_path = r"C:\Users\ork\Downloads\spam\Petar Dundov - At The Turn Of Equilibrium (2016)(FLAC)(CD)\1-01. Petar Dundov - Then Life.flac"
-flac_info = get_flac_info(flac_file_path)
+output_folder = "output/spectrogram"
+flac_info = get_flac_info(flac_file_path, output_folder)
 print(flac_info)
