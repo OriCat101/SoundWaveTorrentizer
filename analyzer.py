@@ -1,6 +1,10 @@
+import base64
 import os
 import tempfile
+import webbrowser
 
+import flickrapi
+import requests
 from pydub import AudioSegment
 import matplotlib.pyplot as plt
 from mutagen.flac import FLAC
@@ -41,22 +45,14 @@ def save_spectrogram_plot(audio, output_folder, file_path):
 
 
 def analyze_album(album_folder, output_folder="output/spectrogram"):
-  track_num = 0
   flac_files = [file for file in os.listdir(album_folder) if file.lower().endswith('.flac')]
   album = {}
 
   for file in tqdm(flac_files, desc="Processing tracks", unit="files"):
     file_path = os.path.join(album_folder, file)
-    track_num += 1
     flac_info = get_flac_info(file_path, output_folder)
     file_name = os.path.basename(file_path)
     album[file_name] = flac_info
-
-    if track_num == 1:
-      # Save spectrogram
-      audioSegment = AudioSegment.from_file(file_path, format="flac")
-      print()
-      print(save_spectrogram_plot(audioSegment, output_folder, file_path))
 
   return album
 
@@ -65,6 +61,9 @@ def get_flac_info(file_path, output_folder="output/spectrogram"):
   result = {}
 
   if os.path.isfile(file_path) and file_path.lower().endswith('.flac'):
+    audioSegment = AudioSegment.from_file(file_path, format="flac")
+    plot_path = save_spectrogram_plot(audioSegment, output_folder, file_path)
+
     audio = FLAC(file_path)
 
     # Extract other parameters
@@ -74,6 +73,7 @@ def get_flac_info(file_path, output_folder="output/spectrogram"):
     result['bitrate'] = f"{int(audio.info.bitrate / 1000)} kbps"
     result['codec'] = "FLAC"
     result['embedded_cuesheet'] = audio.cuesheet
+    result['spectrogram'] = f"[url]{upload_image(plot_path)}[/url]"
 
     # Calculate MD5 hash of audio data
     with open(file_path, 'rb') as flac_file:
@@ -116,6 +116,32 @@ def generate_bbcode_table(metadata):
   return bbcode
 
 
+def upload_image(file_path):
+  # API endpoint
+  api_url = "https://freeimage.host/api/1/upload"
+
+  # Read the image file
+  with open(file_path, "rb") as file:
+    # Encode the image as base64
+    base64_image = base64.b64encode(file.read()).decode("utf-8")
+
+  # API parameters
+  params = {
+    "key": "6d207e02198a847aa98d0a2a901485a5",
+    "action": "upload",
+    "source": base64_image,
+    "format": "json"
+  }
+
+  # Make the API request
+  response = requests.post(api_url, data=params)
+
+  # Check if the request was successful
+  if response.status_code == 200:
+    result = response.json()
+    return result["image"]["url"]
+  else:
+    return {"error": f"Error {response.status_code}: {response.text}"}
 
 
 if __name__ == "__main__":
