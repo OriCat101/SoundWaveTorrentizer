@@ -104,6 +104,6 @@ def get_flac_info(file_path, upload_spectrogram=False):
 
 
 if __name__ == "__main__":
-    album_folder = r"%userprofile%\Downloads\spam\Petar Dundov - At The Turn Of Equilibrium (2016)(FLAC)(CD)"
+    album_folder = r""
     album_data = analyze_album(album_folder)
     print(bbcode(album_data))
