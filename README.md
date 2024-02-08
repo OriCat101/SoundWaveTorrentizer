@@ -4,6 +4,9 @@ A script that can analyse the files and generates a media info table and optiona
 
 It outputs bbcode table into your clipboard for use on various forums.
 
+### Example output:
+![example output.png](doc%2Fimages%2Fexample%20output.png)
+
 ## Smol bits:
 - [x] analyse quality of the album (avg. Bitrate etc.)
 - [x] Generate a spectrograph
