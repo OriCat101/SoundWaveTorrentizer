@@ -3,6 +3,7 @@ import os
 from torf import Torrent
 import json
 
+
 def load_tracker_config(config_name):
     """
     Load tracker configuration from a JSON file.
@@ -14,12 +15,12 @@ def load_tracker_config(config_name):
     - dict: Dictionary containing the loaded configuration data.
     """
 
-    config_file = f"conf/{config_name}.json"
-    config_file = os.path.abspath("torrent/conf/example.json")
+    config_file = os.path.abspath("torrent/conf/{config_name}.json")
 
     with open(config_file, 'r') as file:
         config_data = json.load(file)
     return config_data
+
 
 def create(content, save_path, config_name):
     """
@@ -39,6 +40,7 @@ def create(content, save_path, config_name):
                 private=torrent_config.get('is_private'))
     t.generate()
     t.write(f'{save_path}/{content_name}.torrent')
+
 
 if __name__ == "__main__":
     create(r'conf', '.', "example")
