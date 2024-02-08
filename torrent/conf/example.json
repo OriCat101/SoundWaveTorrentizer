@@ -1,0 +1,6 @@
+{
+  "announce_urls": ["https://localhost:123/announce"],
+  "source": "magic",
+  "is_private": true
+}
+
