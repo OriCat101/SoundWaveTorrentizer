@@ -13,12 +13,15 @@ def load_tracker_config(config_name):
     Returns:
     - dict: Dictionary containing the loaded configuration data.
     """
+
     config_file = f"conf/{config_name}.json"
+    config_file = os.path.abspath("torrent/conf/example.json")
+
     with open(config_file, 'r') as file:
         config_data = json.load(file)
     return config_data
 
-def create_torrent(content, save_path, config_name):
+def create(content, save_path, config_name):
     """
     Create a torrent file using the specified content and configuration.
 
@@ -38,4 +41,4 @@ def create_torrent(content, save_path, config_name):
     t.write(f'{save_path}/{content_name}.torrent')
 
 if __name__ == "__main__":
-    create_torrent(r'conf', '.', "example")
+    create(r'conf', '.', "example")

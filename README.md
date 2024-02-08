@@ -9,11 +9,11 @@ It outputs bbcode table into your clipboard for use on various forums.
 - [x] Generate a spectrograph
 - [x] upload spectrograph 
 - [x] output bbCode
+- [x] generate .torrent 
 - [ ] add support for Markdown
 - [ ] add support for multi dis albums/collections
 - [ ] Basic console UI
 - [ ] Write usage guide
-- [ ] (advanced) generate .torrent 
 - [ ] (advanced) upload using UNIT3D api
 
 ## Disclaimer:
