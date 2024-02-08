@@ -12,11 +12,30 @@ from format.output import bbcode
 
 
 def get_audio_codec(file_path):
+    """
+    Get the audio codec from the file extension.
+
+    Parameters:
+    - file_path (str): The path of the audio file.
+
+    Returns:
+    - str: The audio codec.
+    """
     _, extension = os.path.splitext(file_path)
     return extension.lower()[1:]  # Removing the dot at the beginning
 
 
 def save_spectrogram_plot(audio, file_path):
+    """
+    Save a spectrogram plot of the audio file.
+
+    Parameters:
+    - audio (AudioSegment): The audio segment.
+    - file_path (str): The path of the audio file.
+
+    Returns:
+    - str: The path to the saved spectrogram plot.
+    """
     mixed_channel = audio.set_channels(1)
 
     plt.specgram(
@@ -40,6 +59,16 @@ def save_spectrogram_plot(audio, file_path):
 
 
 def analyze_album(album_path, upload_spectrogram=False):
+    """
+    Analyze an album in FLAC format.
+
+    Parameters:
+    - album_path (str): The path to the folder containing FLAC files.
+    - upload_spectrogram (bool): Flag indicating whether to upload spectrogram images.
+
+    Returns:
+    - dict: Dictionary containing information about the analyzed album.
+    """
     flac_files = [file for file in os.listdir(album_path) if file.lower().endswith('.flac')]
     album = {}
 
@@ -58,6 +87,16 @@ def analyze_album(album_path, upload_spectrogram=False):
 
 
 def get_flac_info(file_path, upload_spectrogram=False):
+    """
+    Get information about a FLAC file.
+
+    Parameters:
+    - file_path (str): The path to the FLAC file.
+    - upload_spectrogram (bool): Flag indicating whether to upload spectrogram images.
+
+    Returns:
+    - dict: Dictionary containing information about the FLAC file.
+    """
     result = {}
 
     if os.path.isfile(file_path) and file_path.lower().endswith('.flac'):
