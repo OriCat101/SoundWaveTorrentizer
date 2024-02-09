@@ -15,7 +15,7 @@ def load_tracker_config(config_name):
     - dict: Dictionary containing the loaded configuration data.
     """
 
-    config_file = os.path.abspath("torrent/conf/{config_name}.json")
+    config_file = os.path.abspath(f"torrent/conf/{config_name}.json")
 
     with open(config_file, 'r') as file:
         config_data = json.load(file)
