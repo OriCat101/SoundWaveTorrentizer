@@ -4,7 +4,7 @@ from torf import Torrent
 import json
 
 
-def load_tracker_config(config_name):
+def load_torrent_config(config_name):
     """
     Load tracker configuration from a JSON file.
 
@@ -15,11 +15,16 @@ def load_tracker_config(config_name):
     - dict: Dictionary containing the loaded configuration data.
     """
 
-    config_file = os.path.abspath(f"torrent/conf/{config_name}.json")
+    config_file = os.path.abspath(f"conf/{config_name}.json")
 
-    with open(config_file, 'r') as file:
-        config_data = json.load(file)
-    return config_data
+    try:
+        with open(config_file, 'r') as file:
+            config_data = json.load(file)
+    except:
+        print(f"Configuration file not found: {config_file}")
+        return None
+
+    return config_data['torrent']
 
 
 def create(content, save_path, config_name):
@@ -31,7 +36,7 @@ def create(content, save_path, config_name):
     - save_path (str): The path where the generated torrent file will be saved.
     - config_name (str): The name of the configuration file without the extension.
     """
-    torrent_config = load_tracker_config(config_name)
+    torrent_config = load_torrent_config(config_name)
     content_name = os.path.basename(content)
 
     t = Torrent(path=content,
