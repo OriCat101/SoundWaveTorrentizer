@@ -123,7 +123,7 @@ def get_flac_info(file_path, upload_spectrogram=False):
         result['bits_per_sample'] = audio.info.bits_per_sample
         result['sample_rate'] = f"{audio.info.sample_rate / 1000} kHz"
         result['bitrate'] = f"{int(audio.info.bitrate / 1000)} kbps"
-        result['codec'] = "FLAC"
+        result['codec'] = audio.mime[0].split("/")[1].upper()
         result['embedded_cuesheet'] = audio.cuesheet
 
         if upload_spectrogram:
