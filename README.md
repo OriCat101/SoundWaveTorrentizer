@@ -19,5 +19,9 @@ It outputs bbcode table into your clipboard for use on various forums.
 - [ ] Write usage guide
 - [ ] (advanced) upload using UNIT3D api
 
+## Contribution
+Missing features? Want to Implement a new API? Want to support other file Types?
+Heck yeh! go for it, Contribution is encuraged and welcome 
+
 ## Disclaimer:
 The code runs and does it is job but it isn't what id call good code, at least rn.
