@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Pycharm project fles
+.idea
+
+# Ignore user conf (keep examples)
+torrent/conf/*
+!torrent/conf/example.json
