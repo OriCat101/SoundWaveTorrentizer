@@ -1,16 +1,20 @@
 {
   "torrent":{
-    // this is more of less just the arguments you hand to a torrent instance in torf
-    // https://torf.readthedocs.io/en/latest/
+    "hint": [
+      "this is more of less just the arguments you hand to a torrent instance in torf",
+      "https://torf.readthedocs.io/en/latest/"
+    ],
+
     "announce_urls": [
       "https://localhost:123/announce"
     ],
     "source": "magic",
-    "is_private": true
+    "is_private": "true"
   },
   "tracker": {
-    "api": "unit3d", // only unit3d is supported at the moment lol
     "url": "https://localhost",
-    "api_token": "YOUR_API_TOKEN"
+    "api_token": "YOUR_API_TOKEN",
+    "category_id" : {},
+    "type_id" : {}
   }
 }
