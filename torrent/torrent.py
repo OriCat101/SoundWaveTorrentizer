@@ -20,6 +20,7 @@ def load_tracker_config(config_name):
     try:
         with open(config_file, 'r') as file:
             config_data = json.load(file)
+            return config_data
     except FileNotFoundError:
         print(f"Configuration file not found: {config_file}")
         return None
