@@ -9,8 +9,9 @@
     "is_private": true
   },
   "tracker": {
-    "api": "unit3d", // only unit3d is supported at the moment lol
     "url": "https://localhost",
-    "api_token": "YOUR_API_TOKEN"
+    "api_token": "YOUR_API_TOKEN",
+    "category_id" : {},
+    "type_id" : {}
   }
 }
