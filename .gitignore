@@ -10,3 +10,4 @@ __pycache__/
 # Ignore user conf (keep examples)
 torrent/conf/*
 !torrent/conf/example.json
+conf/FNP.json
