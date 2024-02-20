@@ -6,9 +6,9 @@
     ],
 
     "announce_urls": [
-      "https://fearnopeer.com/announce/5d0bead05c7331e4db838bc2859400e3"
+      "URL_HERE"
     ],
-    "source": "FnP",
+    "source": "magic",
     "is_private": "true"
   },
   "tracker": {
