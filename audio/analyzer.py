@@ -58,6 +58,26 @@ def save_spectrogram_plot(audio, file_path):
     return spectrogram
 
 
+def analyze_albums(album_paths, upload_spectrogram=False):
+    """
+    Analyze multiple albums in FLAC format.
+
+    Parameters:
+    - album_paths (list): List of paths to the folders containing FLAC files for each album.
+    - upload_spectrogram (bool): Flag indicating whether to upload spectrogram images.
+
+    Returns:
+    - list: List of dictionaries containing information about the analyzed albums.
+    """
+    all_albums_data = []
+
+    for album_path in album_paths:
+        album_data = analyze_album(album_path, upload_spectrogram)
+        all_albums_data.append(album_data)
+
+    return all_albums_data
+
+
 def analyze_album(album_path, upload_spectrogram=False):
     """
     Analyze an album in FLAC format.
@@ -78,10 +98,10 @@ def analyze_album(album_path, upload_spectrogram=False):
         file_name = os.path.basename(file_path)
         album[file_name] = flac_info
 
-        try:
-            album = dict(sorted(album.items(), key=lambda x: int(x[1]['#']), reverse=False))
-        except:
-            pass
+    try:
+        album = dict(sorted(album.items(), key=lambda x: int(x[1]['#']), reverse=False))
+    except:
+        pass
 
     return album
 
@@ -120,7 +140,7 @@ def get_flac_info(file_path, upload_spectrogram=False):
 
         result['duration'] = seconds_to_hhmmss(audio.info.length)
         result['channels'] = audio.info.channels
-        result['bits_per_sample'] = audio.info.bits_per_sample
+        result['bits_per_sample'] = audio.info.bits_per_sample  # Corrected attribute name
         result['sample_rate'] = f"{audio.info.sample_rate / 1000} kHz"
         result['bitrate'] = f"{int(audio.info.bitrate / 1000)} kbps"
         result['codec'] = audio.mime[0].split("/")[1].upper()
@@ -140,9 +160,3 @@ def get_flac_info(file_path, upload_spectrogram=False):
         print(f"Invalid file path: {file_path}")
 
     return result
-
-
-if __name__ == "__main__":
-    album_folder = r""
-    album_data = analyze_album(album_folder)
-    print(bbcode(album_data))
