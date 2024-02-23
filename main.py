@@ -1,3 +1,4 @@
+import os
 import argparse
 import shlex
 import pyperclip
@@ -26,20 +27,29 @@ def main():
         album_paths_input = input("Enter album folder(s) separated by spaces: ")
         album_paths = shlex.split(album_paths_input)
 
-    all_albums_meta = analyzer.analyze_albums(album_paths, args.spectrogram)
+    upload_spectrogram = args.spectrogram
+    if not upload_spectrogram and input("Upload spectrogram? (y/n, default=n): ").lower() == "y":
+        upload_spectrogram = True
+
+    all_albums_meta = analyzer.analyze_albums(album_paths, upload_spectrogram)
 
     for album_path in album_paths:
         print(f"Processing album at path: {album_path}")
 
     if args.generate_torrent or (not args.paths and input("Generate torrent? (y/n, default=y): ").lower() != "n"):
-        save_path = args.save_torrent or input("Save torrent to (default=Album folder): ") or album_path
+        save_path = args.save_torrent or input("Save torrent to (default=Album folder): ") or album_paths[0]
         config_name = args.config or input("Tracker configuration: ")
-        torrent_created = torrent.create(album_paths, save_path, config_name)
+        
+        if not os.path.exists(save_path):
+            torrent_created = torrent.create(album_paths, save_path, config_name)
 
-        if torrent_created:
-            print("Torrent file created.")
+            if torrent_created:
+                print("Torrent file created.")
+            else:
+                print("Torrent file not created.")
         else:
-            print("Torrent file not created.")
+            print("Torrent file already exists.")
+
 
     default_format = "bbcode"  # Set your default format here: "bbcode" or "markdown"
     output_format = args.format or input(f"Choose output format (bbcode/markdown, default={default_format}): ").lower() or default_format
