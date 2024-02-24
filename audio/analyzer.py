@@ -5,11 +5,10 @@ import hashlib
 import numpy as np
 from pydub import AudioSegment
 from mutagen.flac import FLAC
-from tqdm import tqdm
+from alive_progress import alive_bar
 # local
 from api.Freeimagehost import upload_image
 from format.data import seconds_to_hhmmss
-from format.output import bbcode
 
 
 def get_audio_codec(file_path):
@@ -62,7 +61,7 @@ def save_spectrogram_plot(audio, file_path):
 
 def analyze_albums(album_paths, upload_spectrogram=False):
     """
-    Analyze multiple albums in FLAC format.
+    Analyze multiple albums in FLAC format, including nested folders.
 
     Parameters:
     - album_paths (list): List of paths to the folders containing FLAC files for each album.
@@ -74,8 +73,11 @@ def analyze_albums(album_paths, upload_spectrogram=False):
     all_albums_data = []
 
     for album_path in album_paths:
-        album_data = analyze_album(album_path, upload_spectrogram)
-        all_albums_data.append(album_data)
+        if os.path.isdir(album_path):
+            for root, _, files in os.walk(album_path):
+                if any(file.lower().endswith('.flac') for file in files):
+                    album_data = analyze_album(root, upload_spectrogram)
+                    all_albums_data.append(album_data)
 
     return all_albums_data
 
@@ -94,11 +96,13 @@ def analyze_album(album_path, upload_spectrogram=False):
     flac_files = [file for file in os.listdir(album_path) if file.lower().endswith('.flac')]
     album = {}
 
-    for file in tqdm(flac_files, desc="Processing tracks", unit="files"):
-        file_path = os.path.join(album_path, file)
-        flac_info = get_flac_info(file_path, upload_spectrogram)
-        file_name = os.path.basename(file_path)
-        album[file_name] = flac_info
+    with alive_bar(len(flac_files), title='Processing tracks', bar='classic', spinner='classic', length=40) as bar:
+        for file in flac_files:
+            file_path = os.path.join(album_path, file)
+            flac_info = get_flac_info(file_path, upload_spectrogram)
+            file_name = os.path.basename(file_path)
+            album[file_name] = flac_info
+            bar()
 
     try:
         album = dict(sorted(album.items(), key=lambda x: int(x[1]['#']), reverse=False))

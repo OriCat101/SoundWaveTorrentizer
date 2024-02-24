@@ -11,3 +11,4 @@ __pycache__/
 torrent/conf/*
 !torrent/conf/example.json
 conf/FNP.json
+.vscode/settings.json

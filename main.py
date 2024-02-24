@@ -18,9 +18,18 @@ def parse_args():
 
     return parser.parse_args()
 
-# This lets us know if we're running into non-flac files
+
 def is_flac_file(file_path):
-    return file_path.lower().endswith('.flac')
+    """
+    Check if a file is a FLAC file.
+
+    Parameters:
+    - file_path (str): The path to the file.
+
+    Returns:
+    - bool: True if the file is a FLAC file, False otherwise.
+    """
+    return os.path.isfile(file_path) and file_path.lower().endswith('.flac')
 
 def main():
     args = parse_args()
@@ -46,7 +55,7 @@ def main():
             else:
                 print(f"Processing album at path: {album_path}")
                 # This is what checks for non flac files, but ignores potential cover files like cover.jpg
-                non_flac_files = [file for file in os.listdir(album_path) if not is_flac_file(file) and not file.lower().endswith(('.jpg', '.png'))]
+                non_flac_files = [file for file in os.listdir(album_path) if not is_flac_file(os.path.join(album_path, file)) and not file.lower().endswith(('.jpg', '.png', '.webp')) and not os.path.isdir(os.path.join(album_path, file))]
                 if non_flac_files:
                     print(f"Warning: Non-FLAC files found in the folder: {non_flac_files}")
 
