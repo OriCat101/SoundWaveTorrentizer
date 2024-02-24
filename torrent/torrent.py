@@ -37,11 +37,13 @@ def create(contents, save_path, config_name):
     - config_name (str): The name of the configuration file without the extension.
     """
     torrent_config = load_torrent_config(config_name)
+    success = False # This fixes the torrent creation error
 
     for content in contents:
         content_name = os.path.basename(content)
         torrent_file_path = os.path.join(save_path, f"{content_name}.torrent")
-
+        original_torrent_file_path = torrent_file_path
+        # This is how we check for potential torrent duplicates and skip them if wanted
         if os.path.exists(torrent_file_path):
             user_choice = input(f"'{torrent_file_path}' already exists. Do you want to skip it and continue? (y/n): ").lower()
             if user_choice == 'y':
@@ -49,10 +51,13 @@ def create(contents, save_path, config_name):
                 continue
             else:
                 # Modify the file name to prevent overwriting
-                file_name, file_extension = os.path.splitext(torrent_file_path)
+                base_name, extension = os.path.splitext(original_torrent_file_path)
                 index = 1
-                while os.path.exists(torrent_file_path):
-                    torrent_file_path = f"{file_name}_{index}{file_extension}"
+                while True:
+                    new_file_name = f"{base_name}_{index}{extension}"
+                    torrent_file_path = new_file_name
+                    if not os.path.exists(torrent_file_path):
+                        break
                     index += 1
 
         t = Torrent(path=content,
@@ -61,6 +66,9 @@ def create(contents, save_path, config_name):
                     private=torrent_config['is_private'])
         t.generate()
         t.write(torrent_file_path)
+        success = True
+
+    return success
 
 
 if __name__ == "__main__":

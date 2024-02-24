@@ -2,6 +2,7 @@ import os
 import tempfile
 import matplotlib.pyplot as plt
 import hashlib
+import numpy as np
 from pydub import AudioSegment
 from mutagen.flac import FLAC
 from tqdm import tqdm
@@ -24,7 +25,7 @@ def get_audio_codec(file_path):
     _, extension = os.path.splitext(file_path)
     return extension.lower()[1:]  # Removing the dot at the beginning
 
-
+# One day we'll figure out to fix the divide by zero error, but it doesn't break the script so, it's a to-do
 def save_spectrogram_plot(audio, file_path):
     """
     Save a spectrogram plot of the audio file.
@@ -45,6 +46,7 @@ def save_spectrogram_plot(audio, file_path):
         NFFT=2000,  # Increase the number of FFT points for higher frequency resolution
         noverlap=100,  # Increase the overlap for smoother spectrogram
     )
+
     plt.title(f'Mixed Channel Spectrogram: {os.path.basename(file_path)}')
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
@@ -118,6 +120,10 @@ def get_flac_info(file_path, upload_spectrogram=False):
     - dict: Dictionary containing information about the FLAC file.
     """
     result = {}
+    # FLAC file check
+    if not os.path.isfile(file_path) or not file_path.lower().endswith('.flac'):
+        print(f"Error: The file at {file_path} is not a FLAC file.")
+        return {"error": f"The file at {file_path} is not a FLAC file."}
 
     if os.path.isfile(file_path) and file_path.lower().endswith('.flac'):
 
