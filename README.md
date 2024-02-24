@@ -14,7 +14,7 @@ It outputs bbcode table into your clipboard for use on various forums.
 - [x] output bbCode
 - [x] generate .torrent 
 - [x] add support for Markdown
-- [ ] add support for multi dis albums/collections
+- [x] add support for multi dis albums/collections
 - [ ] Basic console UI
 - [ ] Write usage guide
 - [ ] (advanced) upload using UNIT3D api
