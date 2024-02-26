@@ -85,7 +85,7 @@ def main():
                     continue
 
                 if not os.path.exists(torrent_file_path):
-                    torrent_created, created_torrents = torrent.create([album_path], torrent_file_path, config_name)
+                    torrent_created, created_torrents = torrent.create([album_path], torrent_save_path, config_name)
 
                     if torrent_created:
                         print(f"Torrent file created at {torrent_file_path}.")
