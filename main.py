@@ -15,12 +15,12 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description="Process album/music information and generate torrent.")
     parser.add_argument("-p", "--paths", nargs='+', help="Album folder or file path. Seperate with space")
-    parser.add_argument("-s", "--spectrogram", action="store_true", help="Upload spectrogram. Default: False.")
-    parser.add_argument("-g", "--generate-torrent", action="store_true", help="Generate torrent file. Default: False")
-    parser.add_argument("-t", "--save-torrent",
-                        help="Path to save torrent file (default=Album folder). Requires torrent to be saved.")
+    parser.add_argument("-s", "--spectrogram", action="store_true", default=False, help="Upload spectrogram. Default: False.")
+    parser.add_argument("-t", "--save-torrent", nargs='?', const=True,
+                        help="If the argument is provided but empty, the default album path will be used. Optionally, "
+                             "provide a path to save the torrent file.")
     parser.add_argument("-c", "--config", help="Tracker configuration name.")
-    parser.add_argument("-f", "--format", choices=["bbc", "md"], help="Table format (bbcode/markdown).")
+    parser.add_argument("-f", "--format", choices=["bbc", "md"], default="bbc", help="Table format (bbcode/markdown).")
 
     return parser.parse_args()
 
@@ -48,7 +48,7 @@ def main():
         album_paths = shlex.split(album_paths_input)
 
     upload_spectrogram = args.spectrogram
-    if not upload_spectrogram and input("Upload spectrogram? (y/n, default=n): ").lower() == "y":
+    if upload_spectrogram and input("Upload spectrogram? (y/n, default=n): ").lower() == "y":
         upload_spectrogram = True
 
     all_albums_meta = analyzer.analyze_albums(album_paths, upload_spectrogram)
@@ -73,7 +73,7 @@ def main():
             print(f"Error processing album at path {album_path}: {e}")
     # Where the torrent magic happens
 
-    if args.generate_torrent or (not args.paths and input("Generate torrent? (y/n, default=y): ").lower() != "n"):
+    if args.save_torrent or (not args.paths and input("Generate torrent? (y/n, default=y): ").lower() != "n"):
         config_name = args.config or input("Tracker configuration: ")
 
         for album_path in album_paths:
@@ -83,6 +83,9 @@ def main():
                     input_save_path = input(
                         f"Enter path to save torrent file (press Enter to use default album path: {album_path}): ")
                     torrent_save_path = input_save_path or album_path
+                elif args.save_torrent is True:
+                    # Use the default album path
+                    torrent_save_path = album_path
                 else:
                     # Use the save path provided as an argument, expand the user path
                     torrent_save_path = os.path.expanduser(args.save_torrent)

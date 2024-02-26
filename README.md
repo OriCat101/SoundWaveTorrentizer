@@ -32,8 +32,6 @@ The following CLI arguments are available to the User:
 - `-p`, `--paths`: A list of paths to the album folder or files to be processed. This argument is required, and at least one path must be provided. The paths can be separated by spaces.
 - `-s`, `--spectrogram`: A boolean flag indicating whether to upload spectrogram images along with the audio files.
   Default value: `False`.
-- `-g`, `--generate-torrent`: A boolean flag indicating whether to generate a torrent file for the album.
-  Default value: `False`.
 - `-t`, `--save-torrent`: The path where the generated torrent file should be saved. If not specified, the default behavior is to save the torrent file in the same directory as the audio files.
 - `-c`, `--config`: The name of the tracker configuration to use for generating the torrent file. If not specified, no torrent can be generated
 - `-f`, `--format`: The format of the table to display the album information. Valid values are `bbcode` and `markdown`.
