@@ -28,6 +28,13 @@ def load_torrent_config(config_name):
 
 
 def create(contents, save_path, config_name):
+     """
+    Create torrent files using the specified contents and configuration.
+    Parameters:
+    - contents (list): List of paths to the contents to be included in the torrents.
+    - save_path (str): The path where the generated torrent files will be saved.
+    - config_name (str): The name of the configuration file without the extension.
+    """
     torrent_config = load_torrent_config(config_name)
     
     if torrent_config is None:
