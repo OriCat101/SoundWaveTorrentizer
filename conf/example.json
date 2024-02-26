@@ -13,8 +13,8 @@
   },
   "tracker": {
     "url": "https://localhost",
-    "api_token": "YOUR_API_TOKEN",
-    "category_id" : {},
-    "type_id" : {}
+    "api_token": "YOUR_API_TOKEN", // not yet implemented
+    "category_id" : {}, // not yet implemented
+    "type_id" : {} // not yet implemented
   }
 }
