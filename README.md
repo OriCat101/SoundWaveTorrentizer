@@ -8,6 +8,8 @@ It outputs bbcode table into your clipboard for use on various forums.
 
 ### Example output:
 
+![example](doc/images/example output.png)
+
 ## Usage guide
 
 ### Create your config
