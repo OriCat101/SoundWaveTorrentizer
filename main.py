@@ -7,8 +7,12 @@ import format.output
 from torrent import torrent
 
 
-# Should be easy to edit this as needed, add/change new functions
 def parse_args():
+    """
+    Parse command line arguments.
+    Returns:
+    - argparse.Namespace: The parsed arguments.
+    """
     parser = argparse.ArgumentParser(description="Process album/music information and generate torrent.")
     parser.add_argument("-p", "--paths", nargs='+', help="Album folder or file path. Seperate with space")
     parser.add_argument("-s", "--spectrogram", action="store_true", help="Upload spectrogram. Default: False.")
@@ -16,7 +20,7 @@ def parse_args():
     parser.add_argument("-t", "--save-torrent",
                         help="Path to save torrent file (default=Album folder). Requires torrent to be saved.")
     parser.add_argument("-c", "--config", help="Tracker configuration name.")
-    parser.add_argument("-f", "--format", choices=["bbcode", "markdown"], help="Table format (bbcode/markdown).")
+    parser.add_argument("-f", "--format", choices=["bbc", "md"], help="Table format (bbcode/markdown).")
 
     return parser.parse_args()
 
@@ -41,14 +45,14 @@ def main():
         album_paths = args.paths
     else:
         album_paths_input = input("Enter album folder(s) separated by spaces: ")
-        album_paths = shlex.split(album_paths_input)  # This was the answer, fixed our input problems.
+        album_paths = shlex.split(album_paths_input)
 
     upload_spectrogram = args.spectrogram
     if not upload_spectrogram and input("Upload spectrogram? (y/n, default=n): ").lower() == "y":
         upload_spectrogram = True
 
     all_albums_meta = analyzer.analyze_albums(album_paths, upload_spectrogram)
-    # This checks for valid directories, and is also where we check for flac files
+    # This checks for valid directories, and flac files
     for album_path in album_paths:
         try:
             if not os.path.exists(album_path):
@@ -67,7 +71,6 @@ def main():
                 pass
         except Exception as e:
             print(f"Error processing album at path {album_path}: {e}")
-    # Where the torrent magic happens, fixed it to no longer check the directory for existing torrent checks. Whoops!
     # Where the torrent magic happens
 
     if args.generate_torrent or (not args.paths and input("Generate torrent? (y/n, default=y): ").lower() != "n"):
@@ -96,23 +99,24 @@ def main():
             except Exception as e:
                 print(f"Error generating torrent for album at path {album_path}: {e}")
 
-    default_format = "bbcode"  # Set your default format here: "bbcode" or "markdown"
+    default_format = "bbcode"  # Set your default format here: "bbcode" or "markdown" (this is really bad practice especially if you already have a config file)
     output_format = args.format or input(
-        f"Choose output format (bbcode/markdown, default={default_format}): ").lower() or default_format
-
+        f"Choose output format (bbcode(bbc)/markdown(md), default={default_format}): ").lower() or default_format
     formatted_tables = []
+
     for album_meta in all_albums_meta:
-        if output_format == "markdown":
+        if output_format == "md" or output_format == "markdown":
             table_output = format.output.markdown(album_meta)
         else:
             table_output = format.output.bbcode(album_meta)
         formatted_tables.append(table_output)
-    # Simple fallback, wanted to make sure you had a way to easily copy the files again, and I can't create a clickable text button like I originally wanted
+
     combined_output = "\n".join(formatted_tables)
 
+    # Copy the table to clipboard
     while True:
         pyperclip.copy(combined_output)
-        print("Table re-copied to clipboard. Press 'C' to copy again, or any other key to exit.")
+        print("Table re-copied to clipboard. Press 'C' to copy again, or Enter to exit.")
 
         user_input = input()
         if user_input.lower() == 'c':
@@ -120,7 +124,7 @@ def main():
         else:
             break
 
-    print("Done.")
+    print("Done")
 
 
 if __name__ == "__main__":
