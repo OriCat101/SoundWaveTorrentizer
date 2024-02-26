@@ -17,7 +17,8 @@ It outputs bbcode table into your clipboard for use on various forums.
 use [example.json](conf/example.json) as a template and work from there.
 
 > [!NOTE]
-> not all of the arguments are required/implemented yet, the ones that atent are marked as such and all comments ahve to be removed from the file. 
+> not all of the arguments are required/implemented yet, the ones that aten't are marked as such.
+> All comments have to be removed from the file. 
 
 ### Using the Script
 
