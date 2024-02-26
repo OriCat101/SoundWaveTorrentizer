@@ -87,12 +87,6 @@ def main():
                 if not os.path.exists(torrent_file_path):
                     torrent_created, created_torrents = torrent.create([album_path], torrent_save_path, config_name)
 
-                    if torrent_created:
-                        print(f"Torrent file created at {torrent_file_path}.")
-                        for created_torrent in created_torrents:
-                            print(f"Torrent file created: {created_torrent}")
-                    else:
-                        print("Failed to create torrent file.")
             except Exception as e:
                 print(f"Error generating torrent for album at path {album_path}: {e}")
 
