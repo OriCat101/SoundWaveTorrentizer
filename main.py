@@ -63,23 +63,36 @@ def main():
         except Exception as e:
             print(f"Error processing album at path {album_path}: {e}")
     # Where the torrent magic happens, fixed it to no longer check the directory for existing torrent checks. Whoops!
+    # Where the torrent magic happens
+    
     if args.generate_torrent or (not args.paths and input("Generate torrent? (y/n, default=y): ").lower() != "n"):
         config_name = args.config or input("Tracker configuration: ")
-        
+
         for album_path in album_paths:
             try:
                 torrent_file_name = os.path.basename(album_path) + ".torrent"
-                torrent_file_path = os.path.join(album_path, torrent_file_name)
+                if args.save_torrent is None:
+                    input_save_path = input(f"Enter path to save torrent file (press Enter to use default album path: {album_path}): ")
+                    torrent_save_path = input_save_path or album_path
+                else:
+                    # Use the save path provided as an argument, expand the user path
+                    torrent_save_path = os.path.expanduser(args.save_torrent)
+
+                torrent_file_path = os.path.join(torrent_save_path, torrent_file_name)
                 
+                if not os.path.isdir(torrent_save_path):
+                    print(f"Error: Save path does not exist: {torrent_save_path}")
+                    continue
+
                 if not os.path.exists(torrent_file_path):
-                    torrent_created = torrent.create([album_path], album_path, config_name)
+                    torrent_created, created_torrents = torrent.create([album_path], torrent_file_path, config_name)
 
                     if torrent_created:
                         print(f"Torrent file created at {torrent_file_path}.")
+                        for created_torrent in created_torrents:
+                            print(f"Torrent file created: {created_torrent}")
                     else:
                         print("Failed to create torrent file.")
-                else:
-                    print(f"Torrent file already exists at {torrent_file_path}.")
             except Exception as e:
                 print(f"Error generating torrent for album at path {album_path}: {e}")
 
@@ -108,7 +121,6 @@ def main():
             break
 
     print("Done.")
-
 
 if __name__ == "__main__":
     main()

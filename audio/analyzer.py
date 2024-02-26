@@ -36,10 +36,23 @@ def save_spectrogram_plot(audio, file_path):
     Returns:
     - str: The path to the saved spectrogram plot.
     """
+    # Ensure the frame rate is not zero to avoid division by zero
+    if audio.frame_rate == 0:
+        raise ValueError("Audio frame rate cannot be zero.")
+
+    # Convert audio segment to mono (single channel)
     mixed_channel = audio.set_channels(1)
 
+    # This is what fixes the divide by zero error
+    samples = np.array(mixed_channel.get_array_of_samples())
+    if mixed_channel.sample_width == 2:
+        samples = samples.astype(np.int16)
+    elif mixed_channel.sample_width == 4:
+        samples = samples.astype(np.float32)
+
+    # Create the plot
     plt.specgram(
-        mixed_channel.get_array_of_samples(),
+        samples,
         Fs=mixed_channel.frame_rate,
         cmap='viridis',
         NFFT=2000,  # Increase the number of FFT points for higher frequency resolution
@@ -50,9 +63,11 @@ def save_spectrogram_plot(audio, file_path):
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
 
+    # Save the plot to a temporary file
     tmp_folder = tempfile.mkdtemp()
     spectrogram = os.path.join(tmp_folder,
                                f"{os.path.splitext(os.path.basename(file_path))[0]}_mixed_channel_spectrogram.png")
+    
     plt.savefig(spectrogram)
     plt.close()
 
