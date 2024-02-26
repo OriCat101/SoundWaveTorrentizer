@@ -8,9 +8,9 @@ pyperclip = "*"
 matplotlib = "*"
 pydub = "*"
 mutagen = "*"
-tqdm = "*"
 requests = "*"
 torf = "*"
+alive-progress = "*"
 
 [dev-packages]
 
