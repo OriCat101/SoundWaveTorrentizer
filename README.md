@@ -25,7 +25,7 @@ you can eiter just run the script without any arguments, then you'll have a some
 
 ### CLI arguments
 
-*big thanks to: [@GalaxyBalaxy]([GalaxyBalaxy · GitHub](https://github.com/GalaxyBalaxy)) for implementing these <3*
+*big thanks to: [@GalaxyBalaxy](https://github.com/GalaxyBalaxy) for implementing these <3*
 
 The following CLI arguments are available to the User:
 
