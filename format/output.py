@@ -16,3 +16,16 @@ def bbcode(metadata):
 
   bbcode += "[/table]"
   return bbcode
+
+def markdown(metadata):
+    headers = ["Filename"] + [key.capitalize() for key in metadata[list(metadata.keys())[0]]]
+    md_table = "| " + " | ".join(headers) + " |\n"
+    
+    md_table += "| " + " | ".join(["---"] * len(headers)) + " |\n"
+    
+    for track, track_info in metadata.items():
+        row = [track] + list(track_info.values())
+        sanitized_row = [str(item).replace('[url]', '').replace('[/url]', '') for item in row]
+        md_table += "| " + " | ".join(sanitized_row) + " |\n"
+    
+    return md_table

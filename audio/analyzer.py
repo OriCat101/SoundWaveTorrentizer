@@ -2,13 +2,13 @@ import os
 import tempfile
 import matplotlib.pyplot as plt
 import hashlib
+import numpy as np
 from pydub import AudioSegment
 from mutagen.flac import FLAC
-from tqdm import tqdm
+from alive_progress import alive_bar
 # local
 from api.Freeimagehost import upload_image
 from format.data import seconds_to_hhmmss
-from format.output import bbcode
 
 
 def get_audio_codec(file_path):
@@ -24,7 +24,7 @@ def get_audio_codec(file_path):
     _, extension = os.path.splitext(file_path)
     return extension.lower()[1:]  # Removing the dot at the beginning
 
-
+# One day we'll figure out to fix the divide by zero error, but it doesn't break the script so, it's a to-do
 def save_spectrogram_plot(audio, file_path):
     """
     Save a spectrogram plot of the audio file.
@@ -45,6 +45,7 @@ def save_spectrogram_plot(audio, file_path):
         NFFT=2000,  # Increase the number of FFT points for higher frequency resolution
         noverlap=100,  # Increase the overlap for smoother spectrogram
     )
+
     plt.title(f'Mixed Channel Spectrogram: {os.path.basename(file_path)}')
     plt.xlabel('Time (s)')
     plt.ylabel('Frequency (Hz)')
@@ -56,6 +57,29 @@ def save_spectrogram_plot(audio, file_path):
     plt.close()
 
     return spectrogram
+
+
+def analyze_albums(album_paths, upload_spectrogram=False):
+    """
+    Analyze multiple albums in FLAC format, including nested folders.
+
+    Parameters:
+    - album_paths (list): List of paths to the folders containing FLAC files for each album.
+    - upload_spectrogram (bool): Flag indicating whether to upload spectrogram images.
+
+    Returns:
+    - list: List of dictionaries containing information about the analyzed albums.
+    """
+    all_albums_data = []
+
+    for album_path in album_paths:
+        if os.path.isdir(album_path):
+            for root, _, files in os.walk(album_path):
+                if any(file.lower().endswith('.flac') for file in files):
+                    album_data = analyze_album(root, upload_spectrogram)
+                    all_albums_data.append(album_data)
+
+    return all_albums_data
 
 
 def analyze_album(album_path, upload_spectrogram=False):
@@ -72,16 +96,18 @@ def analyze_album(album_path, upload_spectrogram=False):
     flac_files = [file for file in os.listdir(album_path) if file.lower().endswith('.flac')]
     album = {}
 
-    for file in tqdm(flac_files, desc="Processing tracks", unit="files"):
-        file_path = os.path.join(album_path, file)
-        flac_info = get_flac_info(file_path, upload_spectrogram)
-        file_name = os.path.basename(file_path)
-        album[file_name] = flac_info
+    with alive_bar(len(flac_files), title='Processing tracks', bar='classic', spinner='classic', length=40) as bar:
+        for file in flac_files:
+            file_path = os.path.join(album_path, file)
+            flac_info = get_flac_info(file_path, upload_spectrogram)
+            file_name = os.path.basename(file_path)
+            album[file_name] = flac_info
+            bar()
 
-        try:
-            album = dict(sorted(album.items(), key=lambda x: int(x[1]['#']), reverse=False))
-        except:
-            pass
+    try:
+        album = dict(sorted(album.items(), key=lambda x: int(x[1]['#']), reverse=False))
+    except:
+        pass
 
     return album
 
@@ -98,6 +124,10 @@ def get_flac_info(file_path, upload_spectrogram=False):
     - dict: Dictionary containing information about the FLAC file.
     """
     result = {}
+    # FLAC file check
+    if not os.path.isfile(file_path) or not file_path.lower().endswith('.flac'):
+        print(f"Error: The file at {file_path} is not a FLAC file.")
+        return {"error": f"The file at {file_path} is not a FLAC file."}
 
     if os.path.isfile(file_path) and file_path.lower().endswith('.flac'):
 
@@ -120,7 +150,7 @@ def get_flac_info(file_path, upload_spectrogram=False):
 
         result['duration'] = seconds_to_hhmmss(audio.info.length)
         result['channels'] = audio.info.channels
-        result['bits_per_sample'] = audio.info.bits_per_sample
+        result['bits_per_sample'] = audio.info.bits_per_sample  # Corrected attribute name
         result['sample_rate'] = f"{audio.info.sample_rate / 1000} kHz"
         result['bitrate'] = f"{int(audio.info.bitrate / 1000)} kbps"
         result['codec'] = audio.mime[0].split("/")[1].upper()
@@ -140,9 +170,3 @@ def get_flac_info(file_path, upload_spectrogram=False):
         print(f"Invalid file path: {file_path}")
 
     return result
-
-
-if __name__ == "__main__":
-    album_folder = r""
-    album_data = analyze_album(album_folder)
-    print(bbcode(album_data))
