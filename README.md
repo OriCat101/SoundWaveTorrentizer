@@ -8,7 +8,7 @@ It outputs bbcode table into your clipboard for use on various forums.
 
 ### Example output:
 
-![example](doc/images/example output.png)
+![example](/doc/images/exampleoutput.png)
 
 ## Usage guide
 
