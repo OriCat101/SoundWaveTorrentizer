@@ -2,6 +2,7 @@ import os
 import tempfile
 import matplotlib.pyplot as plt
 import hashlib
+import re
 import numpy as np
 from pydub import AudioSegment
 from mutagen.flac import FLAC
@@ -99,7 +100,7 @@ def analyze_albums(album_paths, upload_spectrogram=False):
 
 def analyze_album(album_path, upload_spectrogram=False):
     """
-    Analyze an album in FLAC format.
+    Analyze an album in FLAC format. Ask the user which tracks to upload spectrals.
 
     Parameters:
     - album_path (str): The path to the folder containing FLAC files.
@@ -111,20 +112,66 @@ def analyze_album(album_path, upload_spectrogram=False):
     flac_files = [file for file in os.listdir(album_path) if file.lower().endswith('.flac')]
     album = {}
 
+    # Ask the user for input if upload_spectrogram is True
+    tracks_to_upload_spectrograms = set()
+    if upload_spectrogram:
+        print("Enter the track numbers to upload spectrals separated by commas, or '*' for all tracks:")
+        user_input = input().strip()
+        if user_input == '*':
+            # Use a wildcard to indicate all tracks for spectrogram upload
+            tracks_to_upload_spectrograms = {'*'}
+        else:
+            # Parses user input, keeping the disc prefix and removing leading zeros from track numbers
+            tracks_to_upload_spectrograms = set(track.strip().lstrip('0') for track in user_input.split(','))
+
     with alive_bar(len(flac_files), title='Processing tracks', bar='classic', spinner='classic', length=40) as bar:
         for file in flac_files:
             file_path = os.path.join(album_path, file)
-            flac_info = get_flac_info(file_path, upload_spectrogram)
+            track_number = get_track_number(file_path)  # This function should return the track number as a string
+            # Determine if this track's spectrogram should be uploaded
+            should_upload_spectrogram = ('*' in tracks_to_upload_spectrograms or
+                                         any(track_number == track.lstrip('0') for track in tracks_to_upload_spectrograms))
+            flac_info = get_flac_info(file_path, should_upload_spectrogram)
             file_name = os.path.basename(file_path)
             album[file_name] = flac_info
             bar()
 
     try:
-        album = dict(sorted(album.items(), key=lambda x: int(x[1]['#']), reverse=False))
+        album = dict(sorted(album.items(), key=lambda item: (int(item[1]['disc_number']), int(item[1]['#'])), reverse=False))
     except:
         pass
 
     return album
+
+# Now this considers how I format tracks with Musicbee. Hopefully I've made it work with other tagging types
+def get_track_number(file_path):
+    """
+    Extract the track number from the FLAC file metadata or filename, ignoring disc number and leading zeros.
+
+    Parameters:
+    - file_path (str): The path to the FLAC file.
+
+    Returns:
+    - str: The track number as a string without leading zeros.
+    """
+    try:
+        audio = FLAC(file_path)
+        if 'tracknumber' in audio:
+            # Split track number and remove leading zeros if present
+            return audio['tracknumber'][0].split('/')[0].lstrip('0')
+    except Exception as e:
+        print(f"Error reading FLAC metadata: {e}")
+
+    # Fallback to filename pattern
+    filename = os.path.basename(file_path)
+    # This strips the disc number and the leading zeros
+    match = re.match(r'^\d+-(\d+)', filename)
+    if match:
+        return match.group(1).lstrip('0')
+
+    return "-"
+
+
 
 
 def get_flac_info(file_path, upload_spectrogram=False):
@@ -171,17 +218,17 @@ def get_flac_info(file_path, upload_spectrogram=False):
         result['codec'] = audio.mime[0].split("/")[1].upper()
         result['embedded_cuesheet'] = audio.cuesheet
 
-        if upload_spectrogram:
-            audio_segment = AudioSegment.from_file(file_path, format="flac")
-            plot_path = save_spectrogram_plot(audio_segment, file_path)
-            result['spectrogram'] = f"[url]{upload_image(plot_path)}[/url]"
-
-        with open(file_path, 'rb') as flac_file:
-            audio_data = flac_file.read()
-            md5_hash = hashlib.md5(audio_data).hexdigest()
-            result['audio_md5'] = md5_hash
-
+    if not upload_spectrogram:
+        result['spectrogram'] = "N/A"
     else:
-        print(f"Invalid file path: {file_path}")
+        # Continues to generate spectrogram as usual
+        audio_segment = AudioSegment.from_file(file_path, format="flac")
+        plot_path = save_spectrogram_plot(audio_segment, file_path)
+        result['spectrogram'] = f"[url]{upload_image(plot_path)}[/url]"
+
+    with open(file_path, 'rb') as flac_file:
+        audio_data = flac_file.read()
+        md5_hash = hashlib.md5(audio_data).hexdigest()
+        result['audio_md5'] = md5_hash
 
     return result

@@ -48,7 +48,7 @@ def main():
         album_paths = shlex.split(album_paths_input)
 
     upload_spectrogram = args.spectrogram
-    if upload_spectrogram and input("Upload spectrogram? (y/n, default=n): ").lower() == "y":
+    if upload_spectrogram or input("Upload spectrogram? (y/n, default=n): ").lower() == "y":
         upload_spectrogram = True
 
     all_albums_meta = analyzer.analyze_albums(album_paths, upload_spectrogram)
@@ -119,7 +119,7 @@ def main():
     # Copy the table to clipboard
     while True:
         pyperclip.copy(combined_output)
-        print("Table re-copied to clipboard. Press 'C' to copy again, or Enter to exit.")
+        print("Table copied to clipboard. Press 'C' to copy again, or Enter to exit.")
 
         user_input = input()
         if user_input.lower() == 'c':
