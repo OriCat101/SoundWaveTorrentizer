@@ -76,8 +76,10 @@ def main():
         try:
             if not os.path.exists(album_path):
                 print(f"Error: Album path does not exist: {album_path}.")
+                exit()
             elif not os.path.isdir(album_path):
                 print(f"Error: Path is not a valid album folder: {album_path}.")
+                exit()
             else:
                 print(f"Processing album at path: {album_path}")
                 # This is what checks for non flac files, but ignores potential cover files like cover.jpg
