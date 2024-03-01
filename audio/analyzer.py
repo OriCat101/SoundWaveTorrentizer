@@ -2,7 +2,6 @@ import os
 import tempfile
 import matplotlib.pyplot as plt
 import hashlib
-import re
 import numpy as np
 from pydub import AudioSegment
 from mutagen.flac import FLAC
@@ -24,6 +23,7 @@ def get_audio_codec(file_path):
     """
     _, extension = os.path.splitext(file_path)
     return extension.lower()[1:]  # Removing the dot at the beginning
+
 
 # One day we'll figure out to fix the divide by zero error, but it doesn't break the script so, it's a to-do
 def save_spectrogram_plot(audio, file_path):
@@ -68,7 +68,7 @@ def save_spectrogram_plot(audio, file_path):
     tmp_folder = tempfile.mkdtemp()
     spectrogram = os.path.join(tmp_folder,
                                f"{os.path.splitext(os.path.basename(file_path))[0]}_mixed_channel_spectrogram.png")
-    
+
     plt.savefig(spectrogram)
     plt.close()
 
@@ -130,18 +130,21 @@ def analyze_album(album_path, upload_spectrogram=False):
             track_number = get_track_number(file_path)  # This function should return the track number as a string
             # Determine if this track's spectrogram should be uploaded
             should_upload_spectrogram = ('*' in tracks_to_upload_spectrograms or
-                                         any(track_number == track.lstrip('0') for track in tracks_to_upload_spectrograms))
+                                         any(track_number == track.lstrip('0') for track in
+                                             tracks_to_upload_spectrograms))
             flac_info = get_flac_info(file_path, should_upload_spectrogram)
             file_name = os.path.basename(file_path)
             album[file_name] = flac_info
             bar()
 
     try:
-        album = dict(sorted(album.items(), key=lambda item: (int(item[1]['disc_number']), int(item[1]['#'])), reverse=False))
+        album = dict(
+            sorted(album.items(), key=lambda item: (int(item[1]['disc_number']), int(item[1]['#'])), reverse=False))
     except:
         pass
 
     return album
+
 
 # Now this considers how I format tracks with Musicbee. Hopefully I've made it work with other tagging types
 def get_track_number(file_path):
@@ -163,7 +166,6 @@ def get_track_number(file_path):
         print(f"Error reading FLAC metadata: {e}")
 
     return "-"
-
 
 
 def get_flac_info(file_path, upload_spectrogram=False):
