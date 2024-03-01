@@ -117,7 +117,7 @@ def analyze_album(album_path, upload_spectrogram=False):
     if upload_spectrogram:
         print("Enter the track numbers to upload spectrals separated by commas, or '*' for all tracks:")
         user_input = input().strip()
-        if isinstance(user_input, int):
+        if not isinstance(user_input, int):
             # Use a wildcard to indicate all tracks for spectrogram upload
             tracks_to_upload_spectrograms = {'*'}
         else:
