@@ -1,4 +1,5 @@
 import os
+import json
 import argparse
 import shlex
 import pyperclip
@@ -37,8 +38,26 @@ def is_flac_file(file_path):
     """
     return os.path.isfile(file_path) and file_path.lower().endswith('.flac')
 
+def read_format_from_config(config_path):
+    """
+    Read the default format from the configuration file.
+    
+    Parameters:
+    - config_path (str): The path to the configuration file.
+    
+    Returns:
+    - str: The default format ('bbc' or 'md') from the configuration file if found, None otherwise.
+    """
+    try:
+        with open(config_path) as f:
+            data = json.load(f)
+        return data['defaults']['format']
+    except (FileNotFoundError, KeyError) as e:
+        print(f"Error reading config '{config_path}': {e}")
+        return None
 
 def main():
+    format_value = None
     args = parse_args()
 
     if args.paths:
@@ -75,19 +94,37 @@ def main():
 
     if args.save_torrent or (not args.paths and input("Generate torrent? (y/n, default=y): ").lower() != "n"):
         config_name = args.config or input("Tracker configuration: ")
+        config_file_path = os.path.join(os.path.dirname(__file__), 'conf', f"{config_name}.json")
+
+        try:
+            with open(config_file_path, 'r') as f:
+                config_data = json.load(f)
+                format_value = config_data.get('defaults', {}).get('format')
+                if format_value not in ['bbc', 'md']:
+                    print(f"Warning: Invalid format '{format_value}' in config. Defaulting to 'bbc'.")
+                    format_value = 'bbc'
+       
+        except FileNotFoundError:
+            print(f"Warning: Config file not found at {config_file_path}. Using default format 'bbc'.")
+            
+        
+        except json.JSONDecodeError:
+            print(f"Warning: Invalid JSON in config file at {config_file_path}. Using default format 'bbc'.")
+            
+        
+        except KeyError:
+            print(f"Warning: Format not specified in config file at {config_file_path}. Using default format 'bbc'.")
+            
 
         for album_path in album_paths:
             try:
                 torrent_file_name = os.path.basename(album_path) + ".torrent"
                 if args.save_torrent is None:
-                    input_save_path = input(
-                        f"Enter path to save torrent file (press Enter to use default album path: {album_path}): ")
+                    input_save_path = input(f"Enter path to save torrent file (press Enter to use default album path: {album_path}): ")
                     torrent_save_path = input_save_path or album_path
                 elif args.save_torrent is True:
-                    # Use the default album path
                     torrent_save_path = album_path
                 else:
-                    # Use the save path provided as an argument, expand the user path
                     torrent_save_path = os.path.expanduser(args.save_torrent)
 
                 torrent_file_path = os.path.join(torrent_save_path, torrent_file_name)
@@ -102,13 +139,15 @@ def main():
             except Exception as e:
                 print(f"Error generating torrent for album at path {album_path}: {e}")
 
-    default_format = "bbcode"  # Set your default format here: "bbcode" or "markdown" (this is really bad practice especially if you already have a config file)
-    output_format = args.format or input(
-        f"Choose output format (bbcode(bbc)/markdown(md), default={default_format}): ").lower() or default_format
+
+    # Read the format_value from the user's config
+    valid_formats = ['bbc', 'md']
+    output_format = format_value if format_value in valid_formats else (args.format if args.format in valid_formats else 'bbc')
+
     formatted_tables = []
 
     for album_meta in all_albums_meta:
-        if output_format == "md" or output_format == "markdown":
+        if output_format == "md":
             table_output = format.output.markdown(album_meta)
         else:
             table_output = format.output.bbcode(album_meta)

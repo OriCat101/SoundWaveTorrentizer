@@ -117,7 +117,7 @@ def analyze_album(album_path, upload_spectrogram=False):
     if upload_spectrogram:
         print("Enter the track numbers to upload spectrals separated by commas, or '*' for all tracks:")
         user_input = input().strip()
-        if user_input == '*':
+        if isinstance(user_input, int):
             # Use a wildcard to indicate all tracks for spectrogram upload
             tracks_to_upload_spectrograms = {'*'}
         else:
@@ -152,7 +152,7 @@ def get_track_number(file_path):
     - file_path (str): The path to the FLAC file.
 
     Returns:
-    - str: The track number as a string without leading zeros.
+    - The track number extracted from the file path, or "-" if an error occurs.
     """
     try:
         audio = FLAC(file_path)
@@ -162,15 +162,7 @@ def get_track_number(file_path):
     except Exception as e:
         print(f"Error reading FLAC metadata: {e}")
 
-    # Fallback to filename pattern
-    filename = os.path.basename(file_path)
-    # This strips the disc number and the leading zeros
-    match = re.match(r'^\d+-(\d+)', filename)
-    if match:
-        return match.group(1).lstrip('0')
-
     return "-"
-
 
 
 
