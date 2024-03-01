@@ -74,11 +74,7 @@ def main():
     # This checks for valid directories, and flac files
     for album_path in album_paths:
         try:
-            if not os.path.exists(album_path):
-                print(f"Error: Album path does not exist: {album_path}.")
-                exit()
-            elif not os.path.isdir(album_path):
-                print(f"Error: Path is not a valid album folder: {album_path}.")
+            if not is_valid_path(album_path):
                 exit()
             else:
                 print(f"Processing album at path: {album_path}")
@@ -169,6 +165,28 @@ def main():
             break
 
     print("Done")
+
+
+def is_valid_path(path):
+    """
+    Check if the path is valid. must be a directory and must exist.
+    Args:
+        path:
+
+    Returns:
+        bool: True if the path is valid, False otherwise.
+    """
+    if (os.path.exists(path)) and (os.path.isdir(path)):
+        return True
+    else:
+        if not os.path.exists(path):
+            print(f"Error: Path does not exist: {path}.")
+        elif not os.path.isdir(path):
+            print(f"Error: Path is not a valid folder: {path}.")
+        else:
+            print(f"Error: Invalid path: {path}.")
+
+        return False
 
 
 if __name__ == "__main__":
