@@ -218,7 +218,7 @@ def get_flac_info(file_path, upload_spectrogram=False):
         # Continues to generate spectrogram as usual
         audio_segment = AudioSegment.from_file(file_path, format="flac")
         plot_path = save_spectrogram_plot(audio_segment, file_path)
-        result['spectrogram'] = f"[url]{upload_image(plot_path)}[/url]"
+        result['spectrogram'] = f"{upload_image(plot_path)}"
 
     with open(file_path, 'rb') as flac_file:
         audio_data = flac_file.read()
