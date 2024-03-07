@@ -21,7 +21,7 @@ def parse_args():
                         help="If the argument is provided but empty, the default album path will be used. Optionally, "
                              "provide a path to save the torrent file.")
     parser.add_argument("-c", "--config", help="Tracker configuration name.")
-    parser.add_argument("-f", "--format", choices=["bbc", "md"], default="bbc", help="Table format (bbcode/markdown).")
+    parser.add_argument("-f", "--format", choices=["bbc", "md", "compact_bbc"], default="bbc", help="Table format (bbcode/markdown).")
 
     return parser.parse_args()
 
@@ -139,7 +139,7 @@ def main():
 
 
     # Read the format_value from the user's config
-    valid_formats = ['bbc', 'md']
+    valid_formats = ['bbc', 'md', 'compact_bbc']
     output_format = format_value if format_value in valid_formats else (args.format if args.format in valid_formats else 'bbc')
 
     formatted_tables = []
@@ -147,6 +147,8 @@ def main():
     for album_meta in all_albums_meta:
         if output_format == "md":
             table_output = format.output.markdown(album_meta)
+        elif output_format == "compact_bbc":
+            table_output = format.output.bbcode_compact(album_meta)
         else:
             table_output = format.output.bbcode(album_meta)
         formatted_tables.append(table_output)
