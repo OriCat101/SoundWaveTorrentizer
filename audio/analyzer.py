@@ -120,9 +120,11 @@ def analyze_album(album_path, upload_spectrogram=False):
         if not isinstance(user_input, int):
             # Use a wildcard to indicate all tracks for spectrogram upload
             tracks_to_upload_spectrograms = {'*'}
+            print("Uploading spectrograms for all tracks.")
         else:
             # Parses user input, keeping the disc prefix and removing leading zeros from track numbers
             tracks_to_upload_spectrograms = set(track.strip().lstrip('0') for track in user_input.split(','))
+            print(f"Uploading spectrograms for tracks: {', '.join(tracks_to_upload_spectrograms)}")
 
     with alive_bar(len(flac_files), title='Processing tracks', bar='classic', spinner='classic', length=40) as bar:
         for file in flac_files:
