@@ -18,7 +18,7 @@
     "type_id" : {} // not yet implemented
   },
   "defaults": {
-    "format": "bbc" // or "md" for markdown
+    "format": "bbc" // "md" for markdown, bbc for bbcode table or cbbc for compact bbcode
   }
 }
 

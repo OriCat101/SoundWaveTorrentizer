@@ -16,12 +16,14 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description="Process album/music information and generate torrent.")
     parser.add_argument("-p", "--paths", nargs='+', help="Album folder or file path. Seperate with space")
-    parser.add_argument("-s", "--spectrogram", action="store_true", default=False, help="Upload spectrogram. Default: False.")
+    parser.add_argument("-s", "--spectrogram", action="store_true", default=False,
+                        help="Upload spectrogram. Default: False.")
     parser.add_argument("-t", "--save-torrent", nargs='?', const=True,
                         help="If the argument is provided but empty, the default album path will be used. Optionally, "
                              "provide a path to save the torrent file.")
     parser.add_argument("-c", "--config", help="Tracker configuration name.")
-    parser.add_argument("-f", "--format", choices=["bbc", "md", "compact_bbc"], default="bbc", help="Table format (bbcode/markdown).")
+    parser.add_argument("-f", "--format", choices=["bbc", "md", "cbbc"], default="bbc",
+                        help="Table format (bbcode/markdown/cbbc).")
 
     return parser.parse_args()
 
@@ -37,6 +39,7 @@ def is_flac_file(file_path):
     - bool: True if the file is a FLAC file, False otherwise.
     """
     return os.path.isfile(file_path) and file_path.lower().endswith('.flac')
+
 
 def read_format_from_config(config_path):
     """
@@ -55,6 +58,7 @@ def read_format_from_config(config_path):
     except (FileNotFoundError, KeyError) as e:
         print(f"Error reading config '{config_path}': {e}")
         return None
+
 
 def main():
     format_value = None
@@ -98,27 +102,27 @@ def main():
             with open(config_file_path, 'r') as f:
                 config_data = json.load(f)
                 format_value = config_data.get('defaults', {}).get('format')
-                if format_value not in ['bbc', 'md']:
+                if format_value not in ['bbc', 'md', 'cbbc']:
                     print(f"Warning: Invalid format '{format_value}' in config. Defaulting to 'bbc'.")
                     format_value = 'bbc'
-       
+
         except FileNotFoundError:
             print(f"Warning: Config file not found at {config_file_path}. Using default format 'bbc'.")
-            
-        
+
+
         except json.JSONDecodeError:
             print(f"Warning: Invalid JSON in config file at {config_file_path}. Using default format 'bbc'.")
-            
-        
+
+
         except KeyError:
             print(f"Warning: Format not specified in config file at {config_file_path}. Using default format 'bbc'.")
-            
 
         for album_path in album_paths:
             try:
                 torrent_file_name = os.path.basename(album_path) + ".torrent"
                 if args.save_torrent is None:
-                    input_save_path = input(f"Enter path to save torrent file (press Enter to use default album path: {album_path}): ")
+                    input_save_path = input(
+                        f"Enter path to save torrent file (press Enter to use default album path: {album_path}): ")
                     torrent_save_path = input_save_path or album_path
                 elif args.save_torrent is True:
                     torrent_save_path = album_path
@@ -137,17 +141,17 @@ def main():
             except Exception as e:
                 print(f"Error generating torrent for album at path {album_path}: {e}")
 
-
     # Read the format_value from the user's config
-    valid_formats = ['bbc', 'md', 'compact_bbc']
-    output_format = format_value if format_value in valid_formats else (args.format if args.format in valid_formats else 'bbc')
+    valid_formats = ['bbc', 'md', 'cbbc']
+    output_format = format_value if format_value in valid_formats else (
+        args.format if args.format in valid_formats else 'bbc')
 
     formatted_tables = []
 
     for album_meta in all_albums_meta:
         if output_format == "md":
             table_output = format.output.markdown(album_meta)
-        elif output_format == "compact_bbc":
+        elif output_format == "cbbc":
             table_output = format.output.bbcode_compact(album_meta)
         else:
             table_output = format.output.bbcode(album_meta)
