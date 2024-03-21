@@ -49,6 +49,7 @@ The following CLI arguments are available to the User:
 - [x] generate .torrent
 - [x] add support for Markdown
 - [x] add support for multi dis albums/collections
+- [ ] GUI (There seems to be quite some demand for this)
 - [ ] Display which album is currently being analyzed
 - [x] write arguments doc
 - [ ] Basic console UI
