@@ -50,7 +50,7 @@ def bbcode_compact(metadata):
         output += "[*]"
         if track_info["embedded_cuesheet"]:
             output += ":cd:"
-        if "spectrogram" in track_info:
+        if "spectrogram" in track_info and track_info["spectrogram"] != "N/A":
             output += f" [url={track_info["spectrogram"]}]:bar_chart:[/url]"
 
         output += (f"{track_info["artist"]} - {track_info["title"]} / {track_info["duration"]} "
